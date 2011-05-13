@@ -202,19 +202,27 @@ Trainer::eval(const Event::context_type* context, size_t len,
         }
     }
 
-    // normalize
+    
+    /* For the rationale behind subtracting max_prob from the log-probabilities
+       see maxentmodel.cpp:maxent::MaxentModel::eval_all */
+
+    // Find the maximum log-prob
+    double max_prob = numeric_limits<double>::min();
     size_t best_oid = 0;
-    double max_prob = -1;
-    double sum = 0.0;
     for (size_t oid = 0; oid < m_n_outcomes; ++oid) {
-        probs[oid] = exp(probs[oid]);
-        if (!finite(probs[oid]))
-            probs[oid] = numeric_limits<double>::max();// DBL_MAX;
-        sum += probs[oid];
         if (probs[oid] >= max_prob) {
             max_prob = probs[oid];
             best_oid = oid;
         }
+    }
+
+    // normalize
+    double sum = 0.0;
+    for (size_t oid = 0; oid < m_n_outcomes; ++oid) {
+        // Subtract the maximum log-prob from the others to get them in
+        // the (-inf,0] range.
+        probs[oid] = exp(probs[oid] - max_prob);
+        sum += probs[oid];
     }
 
     for (size_t oid = 0; oid < m_n_outcomes; ++oid)  {

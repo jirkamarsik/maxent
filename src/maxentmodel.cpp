@@ -349,9 +349,39 @@ void MaxentModel::eval_all(const context_type& context,
         }
     }
 
+
+    /* We will need to exponentiate the log-probabilites in probs. These
+       log-probabilites can however be quite large and exponentiating them
+       can render them infinite. At some places in the library, there is
+       an effort to fight this by reducing the infinite value down to
+       DBL_MAX, which isn't okay either, because we can have two such
+       large probabilites and when we try to find their sum for normalization,
+       we overflow again Trying to normalize these large probabilities
+       would also make them NaN, which is a fatal error in this domain.
+       Also by clipping all large values to DBL_MAX we can lose a lot of
+       information when more than 1 log-prob with very distinct values
+       cross over the maximum exponent.
+
+       The proposed solution is to subtract some value from the log-probs
+       to put them in the (-inf,O] range, so that exponentiation won't
+       cause an overflow. The log-probabilities aren't so wild that we
+       would have to fear an underflow and even if they do, exp(-inf) is 0,
+       and because this is before normalization and we know that the sum of our
+       not-normalized probabilities is >= 1, we know that the true probability
+       is even lower and must be an inexpressibly small number for double,
+       so we did the best we could, by setting it to 0. */
+
+    // Find the maximum log-prob
+    double max_prob = numeric_limits<double>::min();
+    for (size_t i = 0; i < probs.size(); ++i) {
+        max_prob = max(max_prob, probs[i]);
+    }
+
     double sum = 0.0;
     for (size_t i = 0; i < probs.size(); ++i) {
-        probs[i] = exp(probs[i]);
+        // Subtract the maximum log-prob from the others to get them in
+        // the (-inf,0] range.
+        probs[i] = exp(probs[i] - max_prob);
         sum += probs[i];
     }
 
@@ -413,13 +443,24 @@ double MaxentModel::eval(const context_type& context,
         }
     }
 
+
+    /* For the rationale behind subtracting max_prob from the log-probabilities
+       see maxentmodel.cpp:maxent::MaxentModel::eval_all*/
+
+    // Find the maximum log-prob
+    double max_prob = numeric_limits<double>::min();
+    for (size_t i = 0; i < probs.size(); ++i) {
+        max_prob = max(max_prob, probs[i]);
+    }
+
     double sum = 0.0;
     for (size_t i = 0; i < probs.size(); ++i) {
-        probs[i] = exp(probs[i]);
-        if (!finite(probs[i]))
-            probs[i] = numeric_limits<double>::max();// DBL_MAX;
+        // Subtract the maximum log-prob from the others to get them in
+        // the (-inf,0] range.
+        probs[i] = exp(probs[i] - max_prob);
         sum += probs[i];
     }
+
     for (size_t i = 0; i < probs.size(); ++i) {
         probs[i] /= sum;
     }
