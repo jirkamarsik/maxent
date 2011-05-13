@@ -1,0 +1,28 @@
+For a detail list of changes between various releases, see ChangeLog.
+
+What's new in this release?
+    * Fix a numeric overflow bug in GIS routine when zero feature values are
+      used
+    * Python binding is now generated with the help of SWIG
+      (http://www.swig.org), and is more easily to build than the previously
+      Boost.Python solution. The API interface is not changed. It simply
+      works!
+    * API Change: python binding now has two slightly different eval
+      functions, eval() and eval_all(). See the manual for detail.
+
+What's new in release 20040709?
+    * Switching to Autoconf/Jam buliding, the package is easier to build.  
+    * Ported to several major C++ compiler (Borland C++, MSVC, Intel C++ and
+    MingW) on Win32 platform.  
+    * A whole host of bugs have been fixed, including a bug that can cause a
+    bus error during loading data with mmap() call, see ChangeLog for detail
+    fixes.
+
+What's new in release 20040315?
+    * The license of the toolkit changed to LGPL. This is in accord with the
+    license of java maxent project: http://maxent.sf.net, from which the
+    toolkit is derived.  
+    * Fix a bug in GIS training algorithm when used with Gaussian prior.  
+    * Re-arrange source code, hopefully, the interface is not changed. 
+    * Minor changes here and there.
+
