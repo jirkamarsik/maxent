@@ -1,1 +1,17 @@
 .svn
+.*.swp
+*.[ao]
+/ccdv
+/config.log
+/config.status
+/src/maxent
+/test/data/model_temp
+/test/test_display
+/test/test_event
+/test/test_gistrainer
+/test/test_itemmap
+/test/test_lbfgstrainer
+/test/test_maxentmodel
+/test/test_mmapfile
+/test/test_modelfile
+/tools/jam
