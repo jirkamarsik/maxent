@@ -44,3 +44,6 @@ InstallFile $(STDHDRS)/maxent : itemmap.hpp ;
 InstallFile $(STDHDRS)/maxent : meevent.hpp ;
 InstallFile $(STDHDRS)/maxent : hash_map.hpp ;
 InstallFile $(STDHDRS)/maxent : ext_algorithm.hpp ;
+InstallFile $(STDHDRS)/maxent : itemmap.tcc ;
+InstallFile $(STDHDRS)/maxent : eventspace.hpp ;
+InstallFile $(STDHDRS)/maxent : eventspace.tcc ;
