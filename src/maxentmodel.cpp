@@ -356,20 +356,29 @@ void MaxentModel::eval_all(const context_type& context,
        an effort to fight this by reducing the infinite value down to
        DBL_MAX, which isn't okay either, because we can have two such
        large probabilites and when we try to find their sum for normalization,
-       we overflow again Trying to normalize these large probabilities
+       we overflow again. Trying to normalize these large probabilities
        would also make them NaN, which is a fatal error in this domain.
-       Also by clipping all large values to DBL_MAX we can lose a lot of
+       Also, by clipping all large values to DBL_MAX, we can lose a lot of
        information when more than 1 log-prob with very distinct values
-       cross over the maximum exponent.
+       crosses over the maximum exponent.
 
        The proposed solution is to subtract some value from the log-probs
        to put them in the (-inf,O] range, so that exponentiation won't
-       cause an overflow. The log-probabilities aren't so wild that we
-       would have to fear an underflow and even if they do, exp(-inf) is 0,
-       and because this is before normalization and we know that the sum of our
-       not-normalized probabilities is >= 1, we know that the true probability
-       is even lower and must be an inexpressibly small number for double,
-       so we did the best we could, by setting it to 0. */
+       cause an overflow. The log-probabilities aren't so large that we
+       would have to fear an underflow. If an underflow would occur, the
+       exponentiation would make the probability 0 (exp(-inf) == 0) and we can
+       show that this is correct. Because one of the log-probabilites now
+       equals 0, we know that after exponentiation their sum is >= 1. This
+       means that the true normalized probabilites will be even smaller. As
+       the logarithm of the smallest positive double is pretty much finite
+       (about -700 on my machine), we know that our probability is vastly
+       smaller and 0 is about the best way to represent it.
+       
+       In this way, it could be possible that a significant difference between
+       two highly improbable outcomes might be lost (the chance is however
+       very small because we would have to have a sum of features * parameters
+       equal to negative infinity). This is however much more tolerable than a
+       loss of significant difference between two highly likely outcomes. */
 
     // Find the maximum log-prob
     double max_prob = numeric_limits<double>::min();
