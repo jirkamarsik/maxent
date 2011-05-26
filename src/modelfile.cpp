@@ -338,6 +338,9 @@ void MaxentModelFile::save_model_txt(const string& model) {
     f << m_n_theta << endl;
     for (size_t i = 0; i < m_n_theta; ++i)
         f << m_theta[i] << endl;
+
+    f.flush();
+    f.close();
 }
 
 void MaxentModelFile::save_model_bin(const string& model) {
