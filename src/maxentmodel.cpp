@@ -184,7 +184,9 @@ void MaxentModel::end_add_event(size_t cutoff) {
 
     // merge the held out events
     if (m_heldout_es->size() > 0) {
-        m_heldout_es->merge_events(cutoff);
+        // MYEDIT: Do not cutoff heldout data.
+        size_t heldout_cutoff = 1;
+        m_heldout_es->merge_events(heldout_cutoff);
         display("Reduced to %d heldout events", m_heldout_es->size());
     }
 
