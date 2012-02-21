@@ -1,10 +1,14 @@
 .svn
 .*.swp
 *.[ao]
+config.h
+Jamrules
 /ccdv
 /config.log
 /config.status
+/python/setup.py
 /src/maxent
+/src/opt
 /test/data/model_temp
 /test/test_display
 /test/test_event
